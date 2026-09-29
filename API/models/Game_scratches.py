@@ -8,4 +8,4 @@ class Game_scratches(Base):
     game_scratches_id : Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     game_id : Mapped[str] = mapped_column(String(10), nullable=False)
     team_id : Mapped[int] = mapped_column(nullable=False)
-    player_id : Mapped[str] = mapped_column(nullable=False)
+    player_id : Mapped[str] = mapped_column(String(7), nullable=False)
