@@ -19,3 +19,6 @@ class Game_goalie_stats_Model(BaseModel):
     savePercentage : float = Field(ge=0,le=1)
     powerPlaySavePercentage : float = Field(ge=0, le=1)
     evenStrengthSavePercentage : float = Field(ge=0, le=1)
+    
+class Game_goalie_stats_Out(Game_goalie_stats_Model):
+    game_id : str
