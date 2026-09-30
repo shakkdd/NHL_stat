@@ -2,3 +2,4 @@
 DATA
 .env
 __pycache__
+CleanCSV
