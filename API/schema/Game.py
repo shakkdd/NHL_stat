@@ -1,18 +1,21 @@
 from pydantic import BaseModel, Field
+from uuid import UUID
 from datetime import datetime
 
-class Game_Model(BaseModel):
+class Game_model(BaseModel):
     season : str = Field(max_length=8)
-    date_time_GMT : datetime
-    away_team_id : int
-    home_team_id : int
-    away_goals : int
-    home_goals : int
+    type : str = Field(max_length=1)
+    date_time : datetime
+    away_team_id : UUID
+    home_team_id : UUID
     outcome : str = Field(max_length=50)
-    home_rink_side_start : str = Field(max_length=5)
+    away_goals : int = Field(max_digits=2, ge=0)
+    home_goals : int = Field(max_digits=2, ge=0)
+    home_rink_side_strat : str = Field(max_length=5)
     venue : str = Field(max_length=100)
-    venue_time_zone_id : str = Field(max_length=100)
-    venue_time_zone_tz : str = Field(max_length=3)
+    venue_time_zone : str = Field(max_length=100)
+    venue_time_zone_offset : int
+    venue_time_zone_tz : str = Field(max_length=3, min_length=3)
     
-class Game_Out(Game_Model):
-    game_id : str
+class Game_out(Game_model):
+    game_id : UUID

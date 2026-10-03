@@ -1,24 +1,23 @@
 from pydantic import BaseModel, Field
+from uuid import UUID
 
-class Game_goalie_stats_Model(BaseModel):
-    player_id : str = Field(max_length=15)
-    team_id : int
-    timeOnIce : int = Field(ge=0)
-    assists : int = Field(ge=0)
+class Game_goalie_stats(BaseModel):
+    
+    team_id : UUID
+    player_id = UUID
+    game_id = UUID
+    time_on_ice : int = Field(ge=0)
+    assist : int = Field(ge=0)
     goals : int = Field(ge=0)
-    pim : int = Field(ge=0)
+    PIM : int = Field(ge=0)
     shots : int = Field(ge=0)
     saves : int = Field(ge=0)
-    powerPlaySaves : int = Field(ge=0)
-    shortHandedSaves : int = Field(ge=0)
-    evenSaves : int = Field(ge=0)
-    shortHandedShotsAgainst : int = Field(ge=0)
-    evenShotsAgainst : int = Field(ge=0)
-    powerPlayShotsAgainst : int = Field(ge=0)
-    decision : str | None = Field(max_length=1)
-    savePercentage : float = Field(ge=0,le=1)
-    powerPlaySavePercentage : float = Field(ge=0, le=1)
-    evenStrengthSavePercentage : float = Field(ge=0, le=1)
-    
-class Game_goalie_stats_Out(Game_goalie_stats_Model):
-    game_id : str
+    power_play_save : int = Field(ge=0)
+    short_handed_save : int = Field(ge=0)
+    even_save : int = Field(ge=0)
+    short_handed_shots_against : int = Field(ge=0)
+    power_play_shots_against : int = Field(ge=0)
+    even_shots_against : int = Field(ge=0)
+    save_percentage : float = Field(ge=0)
+    power_play_saves_percentage : float = Field(ge=0)
+    even_strenght_save_percentage : int = Field(ge=0)
