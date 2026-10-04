@@ -5,23 +5,11 @@ df = pd.read_csv('DATA/game_penalties.csv')
 df.info()
 
 """
-print(df.isna().sum())
-
 many row doesn't have PenaltySeverity cell fill
-"""
-
-
-"""
-print(df.groupby(by=["penaltySeverity", "penaltyMinutes"]).agg(
-    nb_penalty = ("penaltySeverity", "count")
-))
 
 we found out, some Game Misconduct penalty lead to 0 minute penalty
 but Game Misconduct penalty always lead to 10 minute penalty
-"""
 
-
-"""
 many penaltySeverity cell are empty
 the penaltySeverity can be found by the penaltyMinutes
 0 ==> Penalty shot

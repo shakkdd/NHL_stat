@@ -7,4 +7,4 @@ df["emptyNet"] = df["emptyNet"].astype(bool)
 
 df.info()
 
-#df.to_csv("CleanCSV/Clean_Game_Goals.csv", index=True, index_label="game_goals_id")
+#df.to_csv("CleanCSV/Clean_Game_Goals.csv", index=False)

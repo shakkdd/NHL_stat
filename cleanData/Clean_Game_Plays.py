@@ -12,4 +12,4 @@ df["st_y"] = df["st_y"].astype("Int64")
 
 df.info()
 
-#df.to_csv("CleanCSV/Clean_Game_Plays.csv", index=True, index_label="game_play_id")
+#df.to_csv("CleanCSV/Clean_Game_Plays.csv", index=False)
