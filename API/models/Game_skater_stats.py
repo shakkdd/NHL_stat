@@ -6,9 +6,9 @@ from uuid import UUID
 class Game_Skater_stats(Base):
     __tablename__ = "Game_skater_stats"
     
-    team_id : Mapped[UUID] = mapped_column(Uuid, primary_key=True, nullable=False)
-    player_id : Mapped[UUID] = mapped_column(Uuid, primary_key=True, nullable=False)
     game_id : Mapped[UUID] = mapped_column(Uuid, primary_key=True, nullable=False)
+    player_id : Mapped[UUID] = mapped_column(Uuid, primary_key=True, nullable=False)
+    team_id : Mapped[UUID] = mapped_column(Uuid, primary_key=True, nullable=False)
     time_on_ice : Mapped[int] = mapped_column(nullable=False)
     assists : Mapped[int] = mapped_column(nullable=False)
     goals : Mapped[int] = mapped_column(nullable=False)

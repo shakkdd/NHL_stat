@@ -4,6 +4,7 @@ from datetime import datetime
 
 class Play_model(BaseModel):
     
+    game_id : UUID
     for_team_id : UUID | None
     against_team_id : UUID | None
     event : str = Field(max_length=50)

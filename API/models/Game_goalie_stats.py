@@ -1,18 +1,18 @@
 from database import Base
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Uuid, ForeignKeyConstraint
+from sqlalchemy import Uuid, ForeignKeyConstraint, String
 from uuid import UUID
 
 class Game_goalie_stats(Base):
     __tablename__ = "Game_goalie_stats"
     
-    team_id : Mapped[UUID] = mapped_column(Uuid, primary_key=True, nullable=False)
-    player_id : Mapped[UUID] = mapped_column(Uuid, primary_key=True, nullable=False)
     game_id : Mapped[UUID] = mapped_column(Uuid, primary_key=True, nullable=False)
+    player_id : Mapped[UUID] = mapped_column(Uuid, primary_key=True, nullable=False)
+    team_id : Mapped[UUID] = mapped_column(Uuid, primary_key=True, nullable=False)
     time_on_ice : Mapped[int] = mapped_column(nullable=False)
     assists : Mapped[int] = mapped_column(nullable=False)
     goals : Mapped[int] = mapped_column(nullable=False)
-    PIM : Mapped[int] = mapped_column(nullable=False)
+    pim : Mapped[int] = mapped_column(nullable=False)
     shots : Mapped[int] = mapped_column(nullable=False)
     saves : Mapped[int] = mapped_column(nullable=False)
     power_play_saves : Mapped[int] = mapped_column(nullable=False)
@@ -21,6 +21,7 @@ class Game_goalie_stats(Base):
     short_handed_shots_against : Mapped[int] = mapped_column(nullable=False)
     power_play_shots_against : Mapped[int] = mapped_column(nullable=False)
     even_shots_against : Mapped[int] = mapped_column(nullable=False)
+    decision : Mapped[str] = mapped_column(String(1),nullable=False)
     save_percentage : Mapped[float] = mapped_column(nullable=False)
     power_play_saves_percentage : Mapped[float] = mapped_column(nullable=False)
     even_strenght_save_percentage : Mapped[float] = mapped_column(nullable=False)

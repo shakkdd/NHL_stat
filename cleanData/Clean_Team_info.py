@@ -17,10 +17,10 @@ def nettoyage_team_info():
     rapport_ligne.append("Rapport sur CSV Team")
     rapport_ligne.append("="*40 + "\n")
 
-    df = df.drop(columns=['link'])
+    df = df.drop(columns=['link', "franchiseId"])
 
     rapport_ligne.append("aucun probleme à signaler dans le csv\n")
-    rapport_ligne.append("seul la colonne link est retirer car inutile")
+    rapport_ligne.append("colonne link est retirer car inutile, et la colonne FranchiseId car relié a rien et inexploitable")
 
     with open(RAPPORT_PATH, "a", encoding="UTF-8") as f:
         f.write("\n".join(rapport_ligne)+"\n")

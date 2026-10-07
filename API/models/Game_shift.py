@@ -6,8 +6,8 @@ from uuid import UUID
 class Game_Shift(Base):
     __tablename__ = "Game_Shifts"
     
-    player_id : Mapped[UUID] = mapped_column(Uuid,primary_key=True ,nullable=False)
     game_id : Mapped[UUID] = mapped_column(Uuid,primary_key=True ,nullable=False)
+    player_id : Mapped[UUID] = mapped_column(Uuid,primary_key=True ,nullable=False)
     period: Mapped[int] = mapped_column(nullable=False)
     shift_start: Mapped[int] = mapped_column(nullable=False)
     shift_end: Mapped[int] = mapped_column(nullable=False)

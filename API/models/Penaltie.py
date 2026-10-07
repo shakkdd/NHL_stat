@@ -7,8 +7,7 @@ import uuid
 class Penalitie(Base):
     __tablename__ = "Penalities"
     
-    penalitie_id : Mapped[UUID] = mapped_column(Uuid, primary_key=True, nullable=False, default=uuid.uuid4)
-    play_id : Mapped[UUID] =mapped_column(nullable=False)
+    play_id : Mapped[UUID] =mapped_column(primary_key=True, nullable=False)
     penality_severity : Mapped[str] = mapped_column(String(25), nullable=False)
     penalitie_minutes : Mapped[int] = mapped_column(nullable=False)
     

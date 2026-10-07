@@ -2,10 +2,10 @@ from pydantic import BaseModel, Field
 from uuid import UUID
 
 class Game_skater_stats(BaseModel):
-
+    
+    game_id : UUID
     team_id : UUID
     player_id : UUID
-    game_id : UUID
     time_on_ice : int = Field(ge=0)
     assists : int = Field(ge=0)
     goals : int = Field(ge=0)

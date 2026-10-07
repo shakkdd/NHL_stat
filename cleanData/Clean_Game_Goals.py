@@ -25,7 +25,7 @@ def nettoyage_donnee_Game_goals():
     with open(RAPPORT_PATH, "a", encoding="UTF-8") as f:
         f.write("\n".join(rapport_ligne)+"\n")
 
-    df.to_csv(f"{DATA_DIR_OUTPUT}/Clean_Game_Goals.csv", index=False)
+    df.to_csv(f"{DATA_DIR_OUTPUT}/Clean_Game_Goals.csv", index=True, index_label="goals_id")
     
 if __name__ == "__main__":
     nettoyage_donnee_Game_goals()

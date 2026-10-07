@@ -9,6 +9,7 @@ class Play(Base):
     __tablename__ = "Plays"
     
     play_id : Mapped[UUID] = mapped_column(Uuid, primary_key=True, default= uuid.uuid4)
+    game_id : Mapped[UUID] = mapped_column(Uuid)
     for_team_id : Mapped[UUID] = mapped_column(nullable=True)
     against_team_id : Mapped[UUID] = mapped_column(nullable=True)
     event : Mapped[str] = mapped_column(String(50), nullable=False)

@@ -4,7 +4,7 @@ from sqlalchemy import String, Uuid, ForeignKeyConstraint
 from uuid import UUID
 
 class Game_play_player(Base):
-    __tablename__ = "Game_play_player"
+    __tablename__ = "Game_play_players"
     
     player_id : Mapped[UUID] = mapped_column(Uuid, primary_key=True)
     game_id : Mapped[UUID] = mapped_column(Uuid, primary_key=True)
