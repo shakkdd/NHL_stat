@@ -1,4 +1,4 @@
-from database import Base
+from API.database import Base
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import Uuid, ForeignKeyConstraint, String
 from uuid import UUID

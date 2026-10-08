@@ -20,3 +20,9 @@ def getdb():
         yield db
     finally:
         db.close()
+        
+def init_db():
+    from API.models import Game, Game_goalie_stats, Game_goals, Game_play_players
+    from API.models import Game_shift, Game_skater_stats, Game_team_stats, Penaltie, Player, Play, Team
+    
+    Base.metadata.create_all(bind= engine)

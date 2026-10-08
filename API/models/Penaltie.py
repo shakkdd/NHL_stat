@@ -1,4 +1,4 @@
-from database import Base
+from API.database import Base
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String, Uuid, ForeignKeyConstraint
 from uuid import UUID
@@ -12,5 +12,5 @@ class Penalitie(Base):
     penalitie_minutes : Mapped[int] = mapped_column(nullable=False)
     
     __table_args__ = (
-        ForeignKeyConstraint(["play_id"], ["Plays.play_id"], name="fk_penalties_play_id")
+        ForeignKeyConstraint(["play_id"], ["Plays.play_id"], name="fk_penalties_play_id"),
     )
