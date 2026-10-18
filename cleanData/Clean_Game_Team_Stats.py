@@ -92,6 +92,8 @@ def nettoyer_donnees_Game_team_stats():
     colonnes_int = ["goals", "shots", "pim", "powerPlayOpportunities", "powerPlayGoals"]
     for col in colonnes_int:
         df[col] = df[col].astype("Int64")
+        
+    df["won"] = df["won"].astype("boolean")
 
     # 7. Création du rapport de nettoyage
     rapport = [

@@ -7,7 +7,7 @@ class Game_team_stats_model(BaseModel):
     team_id : UUID
     HoA : str  = Field(max_length=4)
     won : bool
-    setteld_in : str = Field(max_length=4)
+    settled_in : str = Field(max_length=4)
     head_coach : str = Field(max_length=100)
     goals : int = Field(ge=0)
     shots : int = Field(ge=0)

@@ -16,17 +16,17 @@ def nettoyage_donnee_Game_shift():
     rapport_ligne.append("="*40)
     rapport_ligne.append("Rapport sur CSV Game_plays")
     rapport_ligne.append("="*40 + "\n")
-
-
-    df["shift_end"] = df["shift_end"].astype("Int64")
-
+    
     initial_row = len(df)
 
-    rapport_ligne.append(str(df["shift_end"].isna().sum()))
-    rapport_ligne.append("supression des ligne vide")
+    missing_shift_end = df["shift_end"].isna().sum()
+    rapport_ligne.append(f"lignes avec shift_end manquant : {missing_shift_end}")
 
-    rapport_ligne.append(f"ligne supprimer : {initial_row - len(df)}")
+    df.dropna(subset=["shift_end"], inplace=True)
+    rapport_ligne.append(f"lignes supprimées : {initial_row - len(df)}")
 
+    df["shift_end"] = df["shift_end"].astype("int64")
+    
     with open(RAPPORT_PATH, "a", encoding="UTF-8") as f:
         f.write("\n".join(rapport_ligne)+"\n")
 

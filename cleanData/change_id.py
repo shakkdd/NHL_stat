@@ -48,8 +48,12 @@ def change_id_to_uuid():
     For_team_id
     against_team_id
     """
+    df_play["game_id"] = df_play["game_id"].map(game_map)
     df_play["team_id_for"] = df_play["team_id_for"].map(team_map)
     df_play["team_id_against"] = df_play["team_id_against"].map(team_map)
+    col_int = ["periodTimeRemaining", "x", "y", "st_x", "st_y"]
+    for col in col_int:
+        df_play[col] = df_play[col].astype("Int64")
     
     df_play.to_csv(f"{DATA_DIR_INPUT}//Clean_Game_Plays.csv", index=False)
 
@@ -81,6 +85,9 @@ def change_id_to_uuid():
     df_game_team_stat = pd.read_csv(f"{DATA_DIR_INPUT}/Clean_Game_Team_Stats.csv")
     df_game_team_stat["game_id"] = df_game_team_stat["game_id"].map(game_map)
     df_game_team_stat["team_id"] = df_game_team_stat["team_id"].map(team_map)
+    colonnes_int = ["goals", "shots", "pim", "powerPlayOpportunities", "powerPlayGoals"]
+    for col in colonnes_int:
+        df_game_team_stat[col] = df_game_team_stat[col].astype("Int64")
     
     df_game_team_stat.to_csv(f"{DATA_DIR_INPUT}/Clean_Game_Team_Stats.csv", index=False)
 
@@ -119,7 +126,7 @@ def change_id_to_uuid():
     df_shift = pd.read_csv(f"{DATA_DIR_INPUT}//Clean_Game_Shifts.csv")
     df_shift["game_id"] = df_shift["game_id"].map(game_map)
     df_shift["player_id"] = df_shift["player_id"].map(player_map)
-    
+    df_shift["shift_end"] = df_shift["shift_end"].replace(".0", "")
     df_shift.to_csv(f"{DATA_DIR_INPUT}//Clean_Game_Shifts.csv", index=False)
 
     """
@@ -132,6 +139,8 @@ def change_id_to_uuid():
     df_game_play_player["play_id"] = df_game_play_player["play_id"].map(play_map)
     df_game_play_player["player_id"] = df_game_play_player["player_id"].map(player_map)
     df_game_play_player["game_id"] = df_game_play_player["game_id"].map(game_map)
+    df_game_play_player["play_id"].dropna(inplace=True)
+    df_game_play_player = df_game_play_player[df_game_play_player["playerType"] != "PlayerID"]
     
     df_game_play_player.to_csv(f"{DATA_DIR_INPUT}/Clean_Game_Plays_Players.csv", index=False)
     

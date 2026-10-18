@@ -24,6 +24,8 @@ def nettoyage_donnee_Game():
 
     rapport_ligne.append("on retire les lignes en doublon")
     df.drop_duplicates(inplace=True)
+    df["away_team_id"].dropna(inplace=True)
+    df["home_team_id"].dropna(inplace=True)
 
     rapport_ligne.append(f"nombre de ligne supprimer : {initial_row-len(df)}")
 

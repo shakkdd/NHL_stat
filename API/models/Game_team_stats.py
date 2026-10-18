@@ -10,7 +10,7 @@ class Game_Teams_Stats(Base):
     team_id : Mapped[UUID] = mapped_column(Uuid, primary_key=True, nullable=False)
     HoA : Mapped[str] = mapped_column(String(4), nullable=False)
     won : Mapped[bool] = mapped_column(nullable=False)
-    setteld_in : Mapped[str] = mapped_column(String(3), nullable=False)
+    settled_in : Mapped[str] = mapped_column(String(3), nullable=False)
     head_coach : Mapped[str] = mapped_column(String(100), nullable=False)
     goals : Mapped[int] = mapped_column(nullable=False)
     shots : Mapped[int] = mapped_column(nullable=False)

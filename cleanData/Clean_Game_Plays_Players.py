@@ -21,7 +21,7 @@ def nettoyage_donnee_Game_plays_player():
     rapport_ligne.append(f"ligne : {initial_row}")
 
     df.drop_duplicates(inplace=True)
-
+    df.drop_duplicates(subset=["play_id", "game_id", "player_id"],inplace=True, keep="first")
     rapport_ligne.append(f"ligne doublon supprimer : {initial_row - len(df)}")
 
     rapport_ligne.append("ligne vide : \n" + str(df.isna().sum()))

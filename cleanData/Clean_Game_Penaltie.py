@@ -16,6 +16,8 @@ def nettoyage_donnee_Game_penaltie():
     rapport_ligne.append("="*40)
     rapport_ligne.append("Rapport sur CSV Game_penalties")
     rapport_ligne.append("="*40 + "\n")
+    
+    df.drop_duplicates(inplace=True)
 
     rapport_ligne.append("penalité vide : "+str(df["penaltySeverity"].isna().sum()))
     rapport_ligne.append(

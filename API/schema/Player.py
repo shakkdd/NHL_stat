@@ -6,8 +6,8 @@ class Player_model(BaseModel):
     
     first_name : str = Field(max_length=50)
     last_name : str = Field(max_length=50)
-    nationality : str = Field(min_length=3, max_length=3)
-    birth_city : str = Field(max_length=100)
+    nationality : str | None = Field(min_length=3, max_length=3)
+    birth_city : str | None= Field(max_length=100)
     primary_position : str = Field(max_length=2)
     birth_date : date
     height : str = Field(max_digits=6)

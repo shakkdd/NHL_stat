@@ -20,6 +20,8 @@ def nettoyage_donnee_Game_skater_stats():
     initial_row = len(df)
     miss_value = df["hits"].isna().sum()
     rapport_ligne.append("on retire les colonnes 'hits', 'takeaways', 'giveaways' et 'blocked'")
+    df = df.drop(columns=["hits", "takeaways", "giveaways", "blocked"])
+    df.drop_duplicates(keep="first", inplace=True)
     rapport_ligne.append(f"trop de donnée manquant : {miss_value} manquant ({round((miss_value/initial_row)*100,2)} %)")
 
     with open(RAPPORT_PATH, "a", encoding="UTF-8") as f:

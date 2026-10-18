@@ -21,7 +21,7 @@ class Game_goalie_stats(Base):
     short_handed_shots_against : Mapped[int] = mapped_column(nullable=False)
     power_play_shots_against : Mapped[int] = mapped_column(nullable=False)
     even_shots_against : Mapped[int] = mapped_column(nullable=False)
-    decision : Mapped[str] = mapped_column(String(1),nullable=False)
+    decision : Mapped[str] = mapped_column(String(1),nullable=True)
     save_percentage : Mapped[float] = mapped_column(nullable=False)
     power_play_saves_percentage : Mapped[float] = mapped_column(nullable=False)
     even_strenght_save_percentage : Mapped[float] = mapped_column(nullable=False)
