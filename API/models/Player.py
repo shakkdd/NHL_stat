@@ -18,5 +18,5 @@ class Players(Base):
     height : Mapped[str] = mapped_column(String(10), nullable=True)
     height_cm : Mapped[float] = mapped_column(nullable=True)
     weight : Mapped[float] = mapped_column(nullable=True)
-    shootsCatches : Mapped[str] = mapped_column(String(1),nullable=True)
+    shoots_catches : Mapped[str] = mapped_column(String(1),nullable=True)
     

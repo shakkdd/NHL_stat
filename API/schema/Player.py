@@ -10,9 +10,10 @@ class Player_model(BaseModel):
     birth_city : str | None= Field(max_length=100)
     primary_position : str = Field(max_length=2)
     birth_date : date
-    height : str = Field(max_digits=6)
-    height : float = Field(ge=0)
-    shoot_catches : str = Field(max_length=1)
+    height : str = Field(max_length=10)
+    height_cm : float = Field(ge=0)
+    weight : float = Field(ge=0)
+    shoots_catches : str | None = Field(max_length=1)
     
 class Player_out(Player_model):
     player_id : UUID

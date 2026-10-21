@@ -20,7 +20,7 @@ class Game(Base):
     venue : Mapped[str] = mapped_column(String(100), nullable=False)
     venue_time_zone : Mapped[str] = mapped_column(String(100), nullable=False)
     venue_time_zone_offset : Mapped[int] = mapped_column(nullable=False)
-    venue_time_zone_tz : Mapped[str] = mapped_column(String(3), nullable=False)
+    venue_time_zone_tz : Mapped[str] = mapped_column(String(5), nullable=False)
     
     __table_args__ =(
         ForeignKeyConstraint(["away_team_id"], ["Teams.team_id"], name="fk_game_away_team"),

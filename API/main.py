@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
 from API.database import init_db
+from API.routeurs import Teams,Players, Game
 
 @asynccontextmanager
 async def lifespan(app : FastAPI):
@@ -9,6 +10,11 @@ async def lifespan(app : FastAPI):
 
 app = FastAPI( title="NHL", lifespan=lifespan, description="API des match NHL de 2000 à 2020")
 
+
 @app.get("/health", tags=["Supervision"])
 def verifier_sante():
     return {"status" : "OK","service": "NHL-API"}
+
+app.include_router(Teams.router)
+app.include_router(Players.router)
+app.include_router(Game.router)

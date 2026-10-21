@@ -8,13 +8,13 @@ class Game_model(BaseModel):
     date_time : datetime
     away_team_id : UUID
     home_team_id : UUID
-    away_goals : int = Field(max_digits=2, ge=0)
-    home_goals : int = Field(max_digits=2, ge=0)
+    away_goals : int = Field(ge=0, le=99)
+    home_goals : int = Field(ge=0, le=99)
     outcome : str = Field(max_length=50)
     venue : str = Field(max_length=100)
     venue_time_zone : str = Field(max_length=100)
     venue_time_zone_offset : int
-    venue_time_zone_tz : str = Field(max_length=3, min_length=3)
+    venue_time_zone_tz : str = Field(max_length=5)
     
 class Game_out(Game_model):
     game_id : UUID
