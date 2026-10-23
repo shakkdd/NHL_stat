@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Query
-from datetime import date
+from datetime import date, datetime, time, timedelta
 from API.database import getdb
 from sqlalchemy.orm import Session
 from sqlalchemy import select
@@ -28,8 +28,12 @@ def get_game(db : Session = Depends(getdb),
     if type:
         query = query.where(Game.type == type)
         
-    if date :
-        query = query.where(Game.date_time == date)
+    if date:
+        start_of_day = datetime.combine(date, time.min)
+        query = query.where(
+            Game.date_time >= start_of_day,
+            Game.date_time < start_of_day + timedelta(days=1),
+        )
         
     if team_1:
         query = query.where((Game.away_team_id == team_1) | (Game.home_team_id == team_1))
@@ -46,3 +50,15 @@ def get_game(db : Session = Depends(getdb),
     query = query.offset(page).limit(limit)
     
     return db.scalars(query)
+
+@router.get("/result")
+def get_outcome(db : Session = Depends(getdb)):
+    return db.scalars(select(Game.outcome).distinct()).all()
+
+@router.get("/place")
+def get_place(db : Session = Depends(getdb)):
+    return db.scalars(select(Game.venue).distinct()).all()
+
+@router.get("/season")
+def get_season(db : Session = Depends(getdb)):
+    return db.scalars(select(Game.season).distinct()).all()
