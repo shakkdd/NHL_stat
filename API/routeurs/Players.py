@@ -29,10 +29,10 @@ def get_player(db : Session = Depends(getdb),
     
     #ajout des filtre
     if first_name:
-        query = query.where(Players.first_name.islike(f"%{first_name}"))
+        query = query.where(Players.first_name.ilike(f"%{first_name}"))
         
     if last_name:
-        query = query.where(Players.last_name.islike(f"%{last_name}"))
+        query = query.where(Players.last_name.ilike(f"%{last_name}"))
     
     if nationality:
         query = query.where(Players.nationality == nationality)
@@ -62,8 +62,12 @@ def get_player(db : Session = Depends(getdb),
         query = query.where(Players.weight <= max_weight)
         
     if shoots_catches:
-        query.where(Players.shoots_catches == shoots_catches)
+        query = query.where(Players.shoots_catches == shoots_catches)
     
     query = query.offset(page).limit(limit)
     
     return db.scalars(query)
+
+@router.get("/position")
+def get_position(db : Session = Depends(getdb)):
+    return db.scalars(select(Players.primary_position).distinct()).all()

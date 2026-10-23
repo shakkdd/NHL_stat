@@ -1,7 +1,6 @@
 import streamlit as st
 import requests
 import os
-from datetime import date
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -29,7 +28,7 @@ def get_season():
     response.raise_for_status()
     return response.json()
 
-st.session_state.setdefault("last_game_limit", 20)
+st.session_state.setdefault("last_game_limit", 10)
 st.session_state.setdefault("applied_game_params", {"page": 0})
 
 with st.form("game_filters"):
@@ -51,7 +50,7 @@ with st.form("game_filters"):
     outcome = st.multiselect("outcome", options=get_outcome())
     venue = st.selectbox("salle", options= get_place(), index=None)
 
-    limit = st.selectbox("Nombre de matchs", [10, 20, 50], index=1)
+    limit = st.selectbox("Nombre de matchs", [10, 20, 50])
     limit_changed = limit != st.session_state.last_game_limit
     offset = st.number_input("page", min_value=0, value=0, step=1)
     submitted = st.form_submit_button("Filtrer")
@@ -59,7 +58,7 @@ with st.form("game_filters"):
 if submitted or limit_changed:
     if submitted:
         params = {
-            "page": int(offset * 10),
+            "page": int(offset * limit),
         }
         optional_params = {
             "season": season,
