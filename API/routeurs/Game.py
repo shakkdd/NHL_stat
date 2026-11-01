@@ -62,3 +62,7 @@ def get_place(db : Session = Depends(getdb)):
 @router.get("/season")
 def get_season(db : Session = Depends(getdb)):
     return db.scalars(select(Game.season).distinct()).all()
+
+@router.get("/id")
+def get_game_id(db : Session = Depends(getdb)):
+    return db.scalars(select(Game.game_id).distinct()).all()

@@ -85,6 +85,6 @@ if submitted or limit_changed:
         st.error(f"Impossible de récupérer les matchs : {error}")
     else:
         if games:
-            st.dataframe(games)
+            st.dataframe(games, column_order=["season", "type", "date_time", "away_team_id", "home_team_id", "away_goals", "home_goals", "outcome", "venue"])
         else:
             st.info("Aucun match trouvé avec ces filtres.")

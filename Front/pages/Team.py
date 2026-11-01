@@ -30,7 +30,8 @@ st.data_editor(
     key="team_editor",
     num_rows="dynamic",
     disabled=["team_id"],
-    hide_index=True
+    hide_index=True,
+    column_order=["short_name", "team_name", "abbreviation"]
 )
 
 if st.button("Enregistrer"):

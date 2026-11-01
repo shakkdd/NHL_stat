@@ -83,7 +83,7 @@ if submitted or limit_changed:
         st.error(f"impossible de récuperer les joueur : {error}")
     else:
         if player:
-            st.dataframe(player)
+            st.dataframe(player, hide_index=True, column_order=["first_name", "last_name", "nationality", "birth_city", "primary_position", "birth_date", "height", "height_cm", "weight", "shoots_catches"])
         else:
-            st.info("Aucun  trouvé avec ces filtres.")
+            st.info("Aucun joueur trouvé avec ces filtres.")
         
