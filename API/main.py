@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
 from API.database import init_db
-from API.routeurs import Teams,Players, Game, game_play
+from API.routeurs import Teams,Players, Game, game_play, player_details
 
 @asynccontextmanager
 async def lifespan(app : FastAPI):
@@ -17,5 +17,6 @@ def verifier_sante():
 
 app.include_router(Teams.router)
 app.include_router(Players.router)
+app.include_router(player_details.router)
 app.include_router(Game.router)
 app.include_router(game_play.router)
