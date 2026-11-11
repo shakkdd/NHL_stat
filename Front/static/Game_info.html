@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #172033;
+      background: transparent;
+    }
+
+    * { box-sizing: border-box; }
+
+    body { margin: 0; }
+    [hidden] { display: none; }
+
+    .status {
+      padding: 14px 16px;
+      color: #475569;
+      background: #f1f5f9;
+      border-radius: 12px;
+    }
+
+    .status.error {
+      color: #991b1b;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+    }
+
+    .game-scoreboard {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding: 20px;
+      background: linear-gradient(135deg, #f8fafc, #eef2ff);
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      text-align: center;
+    }
+
+    .team-name {
+      margin: 0;
+      color: #172033;
+      font-size: 1rem;
+      font-weight: 750;
+    }
+
+    .team-id, .game-id {
+      color: #64748b;
+      font-size: .72rem;
+      overflow-wrap: anywhere;
+    }
+
+    .team-id { display: block; margin-top: 6px; }
+
+    .game-score {
+      color: #0f172a;
+      font-size: clamp(1.7rem, 6vw, 2.5rem);
+      font-variant-numeric: tabular-nums;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .game-meta {
+      grid-column: 1 / -1;
+      padding-top: 12px;
+      border-top: 1px solid #dbe3ee;
+    }
+
+    .game-id { display: block; margin-top: 5px; }
+
+    .period {
+      margin: 24px 0 12px;
+      padding-bottom: 8px;
+      color: #334155;
+      font-size: 1rem;
+      font-weight: 750;
+      border-bottom: 1px solid #cbd5e1;
+    }
+
+    .period:first-child { margin-top: 0; }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .event {
+      --event-color: #64748b;
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: start;
+      padding: 14px 16px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-left: 4px solid var(--event-color);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgb(15 23 42 / 5%);
+      animation: enter 220ms ease both;
+    }
+
+    .event-time {
+      padding-top: 2px;
+      color: #64748b;
+      font-size: .88rem;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+    }
+
+    .event-title {
+      margin: 0;
+      font-size: .98rem;
+      font-weight: 750;
+      color: #172033;
+    }
+
+    .event-description {
+      margin: 5px 0 0;
+      color: #475569;
+      line-height: 1.45;
+    }
+
+    .event-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 9px;
+    }
+
+    .tag {
+      padding: 3px 8px;
+      color: #475569;
+      background: #f1f5f9;
+      border-radius: 999px;
+      font-size: .75rem;
+    }
+
+    .score {
+      min-width: 46px;
+      padding: 5px 8px;
+      color: #334155;
+      background: #f8fafc;
+      border-radius: 8px;
+      font-size: .82rem;
+      font-variant-numeric: tabular-nums;
+      font-weight: 750;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .event-goal { --event-color: #16a34a; background: #f0fdf4; }
+    .event-shot, .event-missed-shot { --event-color: #2563eb; }
+    .event-blocked-shot { --event-color: #7c3aed; }
+    .event-hit { --event-color: #ea580c; }
+    .event-penalty { --event-color: #dc2626; background: #fff7f7; }
+    .event-faceoff { --event-color: #0891b2; }
+    .event-giveaway, .event-takeaway { --event-color: #d97706; }
+
+    @keyframes enter {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 520px) {
+      .event {
+        grid-template-columns: 48px minmax(0, 1fr);
+        gap: 10px;
+        padding: 12px;
+      }
+
+      .score { grid-column: 2; justify-self: start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main id="game-info-app" data-api-url="__API_URL__" data-game-id="__GAME_ID__">
+    <p id="status" class="status" role="status" aria-live="polite">Chargement des événements…</p>
+    <section id="game-scoreboard" class="game-scoreboard" aria-label="Score du match" hidden></section>
+    <div id="events"></div>
+  </main>
+  <script>
+    const app = document.getElementById("game-info-app");
+    const statusMessage = document.getElementById("status");
+    const scoreboard = document.getElementById("game-scoreboard");
+    const eventsContainer = document.getElementById("events");
+    const eventTypes = {
+      "goal": "But",
+      "shot": "Tir cadré",
+      "missed shot": "Tir manqué",
+      "blocked shot": "Tir bloqué",
+      "hit": "Mise en échec",
+      "faceoff": "Mise au jeu",
+      "penalty": "Pénalité",
+      "giveaway": "Perte de rondelle",
+      "takeaway": "Récupération",
+      "period start": "Début de période",
+      "period end": "Fin de période",
+      "period ready": "Période prête",
+      "game scheduled": "Match programmé",
+      "game end": "Fin du match",
+      "stoppage": "Arrêt de jeu",
+      "official challenge": "Contestation officielle",
+      "shootout complete": "Fin de la séance de tirs au but"
+    };
+
+    function addTag(parent, value) {
+      if (value === null || value === undefined || value === "") return;
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = value;
+      parent.appendChild(tag);
+    }
+
+    function renderScoreboard(game) {
+      scoreboard.replaceChildren();
+
+      const awayTeam = document.createElement("div");
+      const awayName = document.createElement("h2");
+      awayName.className = "team-name";
+      awayName.textContent = "Équipe extérieure";
+      const awayId = document.createElement("span");
+      awayId.className = "team-id";
+      awayId.textContent = `ID : ${game.away_team_id}`;
+      awayTeam.append(awayName, awayId);
+
+      const score = document.createElement("div");
+      score.className = "game-score";
+      score.textContent = `${game.away_goals} – ${game.home_goals}`;
+      score.setAttribute("aria-label", `Score ${game.away_goals} à ${game.home_goals}`);
+
+      const homeTeam = document.createElement("div");
+      const homeName = document.createElement("h2");
+      homeName.className = "team-name";
+      homeName.textContent = "Équipe à domicile";
+      const homeId = document.createElement("span");
+      homeId.className = "team-id";
+      homeId.textContent = `ID : ${game.home_team_id}`;
+      homeTeam.append(homeName, homeId);
+
+      const metadata = document.createElement("div");
+      metadata.className = "game-meta";
+      const gameId = document.createElement("span");
+      gameId.className = "game-id";
+      gameId.textContent = `ID du match : ${game.game_id}`;
+      metadata.appendChild(gameId);
+
+      scoreboard.append(awayTeam, score, homeTeam, metadata);
+      scoreboard.hidden = false;
+    }
+
+    function formatTime(value) {
+      const seconds = Number(value);
+      if (!Number.isFinite(seconds)) return value ?? "";
+      return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+    }
+
+    function renderEvent(play) {
+      const eventName = String(play.event || "Événement").trim();
+      const normalizedEvent = eventName.toLowerCase();
+      const card = document.createElement("article");
+      card.className = `event event-${normalizedEvent.replace(/[^a-z0-9]+/g, "-")}`;
+
+      const time = document.createElement("time");
+      time.className = "event-time";
+      time.textContent = formatTime(play.period_time);
+      card.appendChild(time);
+
+      const content = document.createElement("div");
+      const title = document.createElement("h3");
+      title.className = "event-title";
+      title.textContent = eventTypes[normalizedEvent] || eventName;
+      content.appendChild(title);
+
+      if (play.description) {
+        const description = document.createElement("p");
+        description.className = "event-description";
+        description.textContent = play.description;
+        content.appendChild(description);
+      }
+
+      const details = document.createElement("div");
+      details.className = "event-details";
+      addTag(details, play.secondary_type);
+      if (play.x !== null && play.x !== undefined && play.y !== null && play.y !== undefined) {
+        addTag(details, `Position : ${play.x}, ${play.y}`);
+      }
+      if (details.childElementCount) content.appendChild(details);
+      card.appendChild(content);
+
+      const score = document.createElement("span");
+      score.className = "score";
+      score.textContent = `${play.goals_away ?? 0} – ${play.goals_home ?? 0}`;
+      score.title = "Buts extérieur – domicile";
+      card.appendChild(score);
+      return card;
+    }
+
+    function renderPlays(plays) {
+      eventsContainer.replaceChildren();
+      let currentPeriod;
+      let timeline;
+
+      for (const play of plays) {
+        if (play.period !== currentPeriod) {
+          currentPeriod = play.period;
+          const heading = document.createElement("h2");
+          heading.className = "period";
+          heading.textContent = [play.period_type, `Période ${play.period}`].filter(Boolean).join(" · ");
+          eventsContainer.appendChild(heading);
+          timeline = document.createElement("section");
+          timeline.className = "timeline";
+          eventsContainer.appendChild(timeline);
+        }
+        timeline.appendChild(renderEvent(play));
+      }
+    }
+
+    async function loadPlays() {
+      const apiUrl = app.dataset.apiUrl.replace(/\/+$/, "");
+      const gameId = app.dataset.gameId;
+      try {
+        const [gameResponse, playsResponse] = await Promise.all([
+          fetch(`${apiUrl}/Game/${encodeURIComponent(gameId)}`),
+          fetch(`${apiUrl}/Game_info/${encodeURIComponent(gameId)}`)
+        ]);
+        if (!gameResponse.ok) throw new Error(`Erreur HTTP ${gameResponse.status} lors du chargement du match`);
+        if (!playsResponse.ok) throw new Error(`Erreur HTTP ${playsResponse.status} lors du chargement des événements`);
+        const [game, plays] = await Promise.all([gameResponse.json(), playsResponse.json()]);
+        if (!game || typeof game !== "object") throw new Error("Les informations du match sont invalides.");
+        if (!Array.isArray(plays)) throw new Error("La réponse de l’API est invalide.");
+        renderScoreboard(game);
+        if (!plays.length) {
+          statusMessage.textContent = "Aucun événement trouvé pour ce match.";
+          return;
+        }
+        renderPlays(plays);
+        statusMessage.remove();
+      } catch (error) {
+        statusMessage.classList.add("error");
+        statusMessage.textContent = `Impossible de charger les événements : ${error.message}`;
+      }
+    }
+
+    loadPlays();
+  </script>
+</body>
+</html>
