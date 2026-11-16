@@ -185,16 +185,17 @@
   </style>
 </head>
 <body>
-  <main id="game-info-app" data-api-url="__API_URL__" data-game-id="__GAME_ID__">
+  <main id="__APP_ID__" data-api-url="__API_URL__" data-game-id="__GAME_ID__">
     <p id="status" class="status" role="status" aria-live="polite">Chargement des événements…</p>
     <section id="game-scoreboard" class="game-scoreboard" aria-label="Score du match" hidden></section>
     <div id="events"></div>
   </main>
   <script>
-    const app = document.getElementById("game-info-app");
-    const statusMessage = document.getElementById("status");
-    const scoreboard = document.getElementById("game-scoreboard");
-    const eventsContainer = document.getElementById("events");
+    (() => {
+    const app = document.getElementById("__APP_ID__");
+    const statusMessage = app.querySelector("#status");
+    const scoreboard = app.querySelector("#game-scoreboard");
+    const eventsContainer = app.querySelector("#events");
     const eventTypes = {
       "goal": "But",
       "shot": "Tir cadré",
@@ -354,6 +355,7 @@
     }
 
     loadPlays();
+    })();
   </script>
 </body>
 </html>

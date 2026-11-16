@@ -1,6 +1,8 @@
 import html
 import os
 from pathlib import Path
+from uuid import uuid4
+
 import streamlit as st
 import requests
 from dotenv import load_dotenv
@@ -26,5 +28,6 @@ if submitted:
     game_info_html = template_path.read_text(encoding="utf-8")
     game_info_html = game_info_html.replace("__API_URL__", html.escape(API_URL, quote=True))
     game_info_html = game_info_html.replace("__GAME_ID__", html.escape(str(game_id), quote=True))
+    game_info_html = game_info_html.replace("__APP_ID__", f"game-info-app-{uuid4().hex}")
 
     st.html(game_info_html, width="content", unsafe_allow_javascript=True)

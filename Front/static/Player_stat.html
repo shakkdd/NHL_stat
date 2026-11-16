@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #172033;
+      background: transparent;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    [hidden] { display: none !important; }
+
+    .status {
+      padding: 14px 16px;
+      color: #475569;
+      background: #f1f5f9;
+      border-radius: 12px;
+    }
+
+    .status.error {
+      color: #991b1b;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+    }
+
+    .section-title {
+      margin: 24px 0 12px;
+      padding-bottom: 8px;
+      color: #334155;
+      font-size: 1rem;
+      font-weight: 750;
+      border-bottom: 1px solid #cbd5e1;
+    }
+
+    .section-title:first-child { margin-top: 0; }
+
+    .global-groups {
+      display: grid;
+      gap: 20px;
+    }
+
+    .stat-group-title {
+      margin: 0 0 10px;
+      color: var(--group-color, #475569);
+      font-size: .82rem;
+      font-weight: 750;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+      gap: 10px;
+    }
+
+    .stats-grid-primary {
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+    }
+
+    .stat-card {
+      min-width: 0;
+      padding: 13px 15px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+    }
+
+    .stat-card-primary {
+      padding: 17px;
+      background: linear-gradient(135deg, #f8fafc, #eef2ff);
+      border-color: #dbe3f0;
+      border-left: 4px solid var(--group-color, #2563eb);
+    }
+
+    .stat-group-offense { --group-color: #16a34a; }
+    .stat-group-time { --group-color: #7c3aed; }
+    .stat-group-special { --group-color: #d97706; }
+    .stat-group-faceoff { --group-color: #0891b2; }
+
+    .stat-label {
+      display: block;
+      color: #64748b;
+      font-size: .76rem;
+      font-weight: 650;
+    }
+
+    .stat-value {
+      display: block;
+      margin-top: 5px;
+      color: #0f172a;
+      font-size: 1.2rem;
+      font-variant-numeric: tabular-nums;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .stat-card-primary .stat-value { font-size: 1.65rem; }
+
+    .match-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .match-card {
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid #dbe3ee;
+      border-left: 4px solid #2563eb;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgb(15 23 42 / 6%);
+    }
+
+    .match-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px 14px;
+      padding: 13px 16px;
+      background: #eff6ff;
+      border-bottom: 1px solid #dbeafe;
+    }
+
+    .match-title {
+      margin: 0;
+      color: #1e3a8a;
+      font-size: .92rem;
+      font-weight: 750;
+    }
+
+    .match-identifiers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      color: #475569;
+      font-size: .72rem;
+    }
+
+    .match-id {
+      padding: 4px 8px;
+      background: #fff;
+      border: 1px solid #dbe3ee;
+      border-radius: 999px;
+      overflow-wrap: anywhere;
+    }
+
+    .match-key-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      padding: 14px 16px;
+    }
+
+    .match-key-stat {
+      min-width: 0;
+      padding: 11px 12px;
+      background: #f8fafc;
+      border-radius: 10px;
+    }
+
+    .match-key-stat-goals { background: #f0fdf4; }
+    .match-key-stat-assists { background: #eff6ff; }
+    .match-key-stat-time { background: #f5f3ff; }
+
+    .match-key-label {
+      display: block;
+      color: #64748b;
+      font-size: .74rem;
+      font-weight: 650;
+    }
+
+    .match-key-value {
+      display: block;
+      margin-top: 4px;
+      color: #0f172a;
+      font-size: 1.25rem;
+      font-variant-numeric: tabular-nums;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .match-key-stat-goals .match-key-value { color: #15803d; }
+    .match-key-stat-assists .match-key-value { color: #1d4ed8; }
+    .match-key-stat-time .match-key-value { color: #6d28d9; }
+
+    .match-details {
+      margin: 0 16px 14px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .match-details summary {
+      padding-top: 11px;
+      color: #475569;
+      cursor: pointer;
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    .match-details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 8px;
+      padding-top: 11px;
+    }
+
+    .match-detail {
+      padding: 9px 10px;
+      background: #f8fafc;
+      border-radius: 8px;
+    }
+
+    .match-detail-label {
+      display: block;
+      color: #64748b;
+      font-size: .7rem;
+    }
+
+    .match-detail-value {
+      display: block;
+      margin-top: 3px;
+      color: #334155;
+      font-size: .86rem;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+    }
+
+    @media (max-width: 480px) {
+      .global-groups { gap: 16px; }
+      .stats-grid, .stats-grid-primary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stat-card, .stat-card-primary { padding: 12px; }
+      .stat-card-primary .stat-value { font-size: 1.4rem; }
+      .match-key-stats { gap: 6px; padding: 11px; }
+      .match-key-stat { padding: 9px 8px; }
+      .match-key-value { font-size: 1.05rem; }
+      .match-details { margin-right: 11px; margin-left: 11px; }
+    }
+  </style>
+</head>
+<body>
+  <main id="__APP_ID__"
+        data-api-url="__API_URL__"
+        data-player-id="__PLAYER_ID__"
+        data-team-id="__TEAM_ID__"
+        data-limit="__LIMIT__"
+        data-page="__PAGE__">
+    <p id="status" class="status" role="status" aria-live="polite">Chargement des statistiques…</p>
+    <section id="global-stats" hidden>
+      <h2 class="section-title">Statistiques globales</h2>
+      <div id="global-groups" class="global-groups"></div>
+    </section>
+    <section id="match-stats" hidden>
+      <h2 class="section-title">Statistiques par match</h2>
+      <div id="match-list" class="match-list"></div>
+    </section>
+  </main>
+  <script>
+    (() => {
+      const app = document.getElementById("__APP_ID__");
+      const statusMessage = app.querySelector("#status");
+      const globalSection = app.querySelector("#global-stats");
+      const globalGroups = app.querySelector("#global-groups");
+      const matchSection = app.querySelector("#match-stats");
+      const matchList = app.querySelector("#match-list");
+
+      const globalGroupsConfig = [
+        {
+          title: "Production offensive",
+          className: "stat-group-offense",
+          primary: true,
+          metrics: [
+            ["Buts", "total_goals"],
+            ["Passes décisives", "total_assists"],
+            ["Tirs", "total_shots"],
+            ["Différentiel", "total_plus_minus"]
+          ]
+        },
+        {
+          title: "Temps de jeu",
+          className: "stat-group-time",
+          metrics: [
+            ["Temps total", "total_time_on_ice", true],
+            ["À forces égales", "total_even_time_on_ice", true],
+            ["En avantage numérique", "total_power_play_time_on_ice", true],
+            ["En infériorité numérique", "total_short_handed_time_on_ice", true]
+          ]
+        },
+        {
+          title: "Unités spéciales",
+          className: "stat-group-special",
+          metrics: [
+            ["Buts en avantage numérique", "total_power_play_goals"],
+            ["Passes en avantage numérique", "total_power_play_assists"],
+            ["Buts en infériorité numérique", "total_short_handed_goals"],
+            ["Passes en infériorité numérique", "total_short_handed_assists"]
+          ]
+        },
+        {
+          title: "Discipline et mises au jeu",
+          className: "stat-group-faceoff",
+          metrics: [
+            ["Minutes de pénalité", "total_penalty_minutes"],
+            ["Mises au jeu gagnées", "total_face_off_wins"],
+            ["Mises au jeu disputées", "total_face_off_taken"]
+          ]
+        }
+      ];
+
+      const matchDetails = [
+        ["Tirs", "shots"],
+        ["Différentiel", "plus_minus"],
+        ["Buts en avantage numérique", "power_play_goals"],
+        ["Passes en avantage numérique", "power_play_assists"],
+        ["Temps en avantage numérique", "power_play_time_on_ice", true],
+        ["Buts en infériorité numérique", "short_handed_goals"],
+        ["Passes en infériorité numérique", "short_handed_assists"],
+        ["Temps en infériorité numérique", "short_handed_time_on_ice", true],
+        ["Temps à forces égales", "even_time_on_ice", true],
+        ["Minutes de pénalité", "penalty_minutes"],
+        ["Mises au jeu gagnées", "face_off_wins"],
+        ["Mises au jeu disputées", "face_off_taken"]
+      ];
+
+      function formatTime(value) {
+        const totalSeconds = Number(value);
+        if (!Number.isFinite(totalSeconds)) return value ?? "—";
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        return [hours, minutes, seconds].map(part => String(part).padStart(2, "0")).join(":");
+      }
+
+      function formatValue(value, isTime) {
+        if (value === null || value === undefined) return "—";
+        return isTime ? formatTime(value) : String(value);
+      }
+
+      function renderGlobalStats(stats) {
+        if (!stats || typeof stats !== "object") return;
+        const fragment = document.createDocumentFragment();
+        for (const groupConfig of globalGroupsConfig) {
+          const metrics = groupConfig.metrics.filter(([, key]) => key in stats);
+          if (!metrics.length) continue;
+
+          const group = document.createElement("section");
+          group.className = `stat-group ${groupConfig.className}`;
+          const heading = document.createElement("h3");
+          heading.className = "stat-group-title";
+          heading.textContent = groupConfig.title;
+          const grid = document.createElement("div");
+          grid.className = groupConfig.primary ? "stats-grid stats-grid-primary" : "stats-grid";
+
+          for (const [label, key, isTime] of metrics) {
+            const card = document.createElement("article");
+            card.className = groupConfig.primary ? "stat-card stat-card-primary" : "stat-card";
+            const title = document.createElement("span");
+            title.className = "stat-label";
+            title.textContent = label;
+            const value = document.createElement("strong");
+            value.className = "stat-value";
+            value.textContent = formatValue(stats[key], isTime);
+            card.append(title, value);
+            grid.appendChild(card);
+          }
+
+          group.append(heading, grid);
+          fragment.appendChild(group);
+        }
+        globalGroups.replaceChildren(fragment);
+        globalSection.hidden = !globalGroups.childElementCount;
+      }
+
+      function renderMatchStats(stats) {
+        if (!Array.isArray(stats) || !stats.length) return;
+        const cards = document.createDocumentFragment();
+        for (const [index, match] of stats.entries()) {
+          const card = document.createElement("article");
+          card.className = "match-card";
+
+          const header = document.createElement("header");
+          header.className = "match-header";
+          const title = document.createElement("h3");
+          title.className = "match-title";
+          title.textContent = `Match ${index + 1}`;
+          const identifiers = document.createElement("div");
+          identifiers.className = "match-identifiers";
+          for (const [label, key] of [["Match ID", "game_id"], ["Équipe ID", "team_id"]]) {
+            const identifier = document.createElement("span");
+            identifier.className = "match-id";
+            identifier.textContent = `${label} : ${match[key] ?? "—"}`;
+            identifiers.appendChild(identifier);
+          }
+          header.append(title, identifiers);
+
+          const keyStats = document.createElement("div");
+          keyStats.className = "match-key-stats";
+          for (const [label, key, className, isTime] of [
+            ["Buts", "goals", "match-key-stat-goals"],
+            ["Passes décisives", "assists", "match-key-stat-assists"],
+            ["Temps de jeu", "time_on_ice", "match-key-stat-time", true]
+          ]) {
+            const item = document.createElement("div");
+            item.className = `match-key-stat ${className}`;
+            const itemLabel = document.createElement("span");
+            itemLabel.className = "match-key-label";
+            itemLabel.textContent = label;
+            const itemValue = document.createElement("strong");
+            itemValue.className = "match-key-value";
+            itemValue.textContent = formatValue(match[key], isTime);
+            item.append(itemLabel, itemValue);
+            keyStats.appendChild(item);
+          }
+
+          const details = document.createElement("details");
+          details.className = "match-details";
+          const summary = document.createElement("summary");
+          summary.textContent = "Autres statistiques";
+          const detailGrid = document.createElement("div");
+          detailGrid.className = "match-details-grid";
+          for (const [label, key, isTime] of matchDetails) {
+            const item = document.createElement("div");
+            item.className = "match-detail";
+            const itemLabel = document.createElement("span");
+            itemLabel.className = "match-detail-label";
+            itemLabel.textContent = label;
+            const itemValue = document.createElement("strong");
+            itemValue.className = "match-detail-value";
+            itemValue.textContent = formatValue(match[key], isTime);
+            item.append(itemLabel, itemValue);
+            detailGrid.appendChild(item);
+          }
+          details.append(summary, detailGrid);
+          card.append(header, keyStats, details);
+          cards.appendChild(card);
+        }
+        matchList.replaceChildren(cards);
+        matchSection.hidden = false;
+      }
+
+      async function loadStats() {
+        const apiUrl = app.dataset.apiUrl.replace(/\/+$/, "");
+        const playerId = encodeURIComponent(app.dataset.playerId);
+        const params = new URLSearchParams({
+          limit: app.dataset.limit,
+          page: app.dataset.page
+        });
+        if (app.dataset.teamId) params.set("team_id", app.dataset.teamId);
+
+        try {
+          const [matchesResponse, globalResponse] = await Promise.all([
+            fetch(`${apiUrl}/Player_stat/${playerId}?${params}`),
+            fetch(`${apiUrl}/Player_stat/${playerId}/global_stat?${params}`)
+          ]);
+          if (!matchesResponse.ok) throw new Error(`Erreur HTTP ${matchesResponse.status} lors du chargement des matchs`);
+          if (!globalResponse.ok) throw new Error(`Erreur HTTP ${globalResponse.status} lors du chargement des statistiques globales`);
+          const [matches, globalStats] = await Promise.all([
+            matchesResponse.json(),
+            globalResponse.json()
+          ]);
+          if (!Array.isArray(matches)) throw new Error("La liste des statistiques par match est invalide.");
+
+          renderGlobalStats(globalStats);
+          renderMatchStats(matches);
+          if (!globalStats && !matches.length) {
+            statusMessage.textContent = "Aucune statistique à afficher pour ce joueur.";
+          } else {
+            statusMessage.remove();
+          }
+        } catch (error) {
+          statusMessage.classList.add("error");
+          statusMessage.textContent = `Impossible de charger les statistiques : ${error.message}`;
+        }
+      }
+
+      loadStats();
+    })();
+  </script>
+</body>
+</html>
