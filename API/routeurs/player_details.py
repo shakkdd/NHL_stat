@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from uuid import UUID
 from API.models.Game_skater_stats import Game_Skater_stats
+from API.models.Team import Team
 from API.schema.Game_skater_stats import Game_skater_stats_out
 
 router= APIRouter(prefix="/Player_stat", tags=["Player_stat"])
@@ -17,14 +18,25 @@ def get_player_match_stat(player_id: UUID,
     page: int = Query(0, ge=0), 
     db : Session = Depends(getdb)):
     
-    query = select(Game_Skater_stats).where(Game_Skater_stats.player_id == player_id)
+    query = (
+        select(Game_Skater_stats, Team.abbreviation.label("team_abbreviation"))
+        .join(Team, Game_Skater_stats.team_id == Team.team_id)
+        .where(Game_Skater_stats.player_id == player_id)
+    )
     
     if team_id:
        query = query.where(Game_Skater_stats.team_id == team_id)
     
     query = query.limit(limit).offset(page).order_by(Game_Skater_stats.game_id)
     
-    return db.scalars(query).all()
+    rows = db.execute(query).all()
+    return [
+        {
+            **Game_skater_stats_out.model_validate(stats).model_dump(),
+            "team_abbreviation": team_abbreviation,
+        }
+        for stats, team_abbreviation in rows
+    ]
 
 @router.get("/{player_id}/global_stat")
 def get_player_global_stat(player_id: UUID,
@@ -65,6 +77,16 @@ def get_player_global_stat(player_id: UUID,
 @router.get("/{player_id}/Teams")
 def get_player_teams(player_id: UUID, db: Session = Depends(getdb)):
     
-    query = select(Game_Skater_stats.team_id).where(Game_Skater_stats.player_id == player_id).distinct()
+    query = (
+        select(Team.team_id, Team.abbreviation)
+        .select_from(Game_Skater_stats)
+        .join(Team, Game_Skater_stats.team_id == Team.team_id)
+        .where(Game_Skater_stats.player_id == player_id)
+        .distinct()
+        .order_by(Team.abbreviation)
+    )
     
-    return db.scalars(query).all()
+    return [
+        {"team_id": team_id, "abbreviation": abbreviation}
+        for team_id, abbreviation in db.execute(query).all()
+    ]

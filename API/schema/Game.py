@@ -18,3 +18,5 @@ class Game_model(BaseModel):
     
 class Game_out(Game_model):
     game_id : UUID
+    away_team_abbreviation: str | None = None
+    home_team_abbreviation: str | None = None

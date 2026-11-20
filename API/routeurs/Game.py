@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from datetime import date, datetime, time, timedelta
 from API.database import getdb
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 from sqlalchemy import select
 from API.models.Game import Game
+from API.models.Team import Team
 from API.schema.Game import Game_out
 from uuid import UUID
 
@@ -21,7 +22,17 @@ def get_game(db : Session = Depends(getdb),
     outcome : str = Query(None),
     venu : str = Query(None)):
     
-    query = select(Game)
+    away_team = aliased(Team)
+    home_team = aliased(Team)
+    query = (
+        select(
+            Game,
+            away_team.abbreviation.label("away_team_abbreviation"),
+            home_team.abbreviation.label("home_team_abbreviation"),
+        )
+        .outerjoin(away_team, Game.away_team_id == away_team.team_id)
+        .outerjoin(home_team, Game.home_team_id == home_team.team_id)
+    )
     
     if season:
         query = query.where(Game.season == season)
@@ -37,10 +48,14 @@ def get_game(db : Session = Depends(getdb),
         )
         
     if team_1:
-        query = query.where((Game.away_team_id == team_1) | (Game.home_team_id == team_1))
+        query = query.where(
+            (away_team.abbreviation == team_1) | (home_team.abbreviation == team_1)
+        )
     
     if team_2:
-        query = query.where((Game.away_team_id == team_2) | (Game.home_team_id == team_2))
+        query = query.where(
+            (away_team.abbreviation == team_2) | (home_team.abbreviation == team_2)
+        )
         
     if outcome:
         query = query.where(Game.outcome == outcome)
@@ -50,7 +65,15 @@ def get_game(db : Session = Depends(getdb),
         
     query = query.offset(page).limit(limit)
     
-    return db.scalars(query)
+    rows = db.execute(query).all()
+    return [
+        {
+            **Game_out.model_validate(game, from_attributes=True).model_dump(),
+            "away_team_abbreviation": away_abbreviation,
+            "home_team_abbreviation": home_abbreviation,
+        }
+        for game, away_abbreviation, home_abbreviation in rows
+    ]
 
 @router.get("/result")
 def get_outcome(db : Session = Depends(getdb)):
@@ -70,21 +93,24 @@ def get_game_id(db : Session = Depends(getdb)):
 
 @router.get("/{game_id}", response_model=Game_out)
 def get_game_by_id(game_id: UUID, db: Session = Depends(getdb)):
-    game = db.get(Game, game_id)
-    if game is None:
+    away_team = aliased(Team)
+    home_team = aliased(Team)
+    query = (
+        select(
+            Game,
+            away_team.abbreviation.label("away_team_abbreviation"),
+            home_team.abbreviation.label("home_team_abbreviation"),
+        )
+        .outerjoin(away_team, Game.away_team_id == away_team.team_id)
+        .outerjoin(home_team, Game.home_team_id == home_team.team_id)
+        .where(Game.game_id == game_id)
+    )
+    row = db.execute(query).one_or_none()
+    if row is None:
         raise HTTPException(status_code=404, detail="Game not found")
+    game, away_abbreviation, home_abbreviation = row
     return {
-        "game_id": game.game_id,
-        "season": game.season,
-        "type": game.type,
-        "date_time": game.date_time,
-        "away_team_id": game.away_team_id,
-        "home_team_id": game.home_team_id,
-        "away_goals": game.away_goals,
-        "home_goals": game.home_goals,
-        "outcome": game.outcome,
-        "venue": game.venue,
-        "venue_time_zone": game.venue_time_zone,
-        "venue_time_zone_offset": game.venue_time_zone_offset,
-        "venue_time_zone_tz": game.venue_time_zone_tz,
+        **Game_out.model_validate(game, from_attributes=True).model_dump(),
+        "away_team_abbreviation": away_abbreviation,
+        "home_team_abbreviation": home_abbreviation,
     }

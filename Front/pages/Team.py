@@ -8,6 +8,7 @@ load_dotenv()
 API_URL = os.getenv("API_URL", "").rstrip("/")
 
 st.title("Team")
+st.set_page_config(layout="wide")
 
 def get_team():
     response = requests.get(f"{API_URL}/Teams", timeout=10)

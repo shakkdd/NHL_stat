@@ -8,6 +8,7 @@ import requests
 from dotenv import load_dotenv
 
 st.title("Game Info")
+st.set_page_config(layout="wide")
 
 load_dotenv()
 

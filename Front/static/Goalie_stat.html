@@ -359,7 +359,7 @@
           title.textContent = `Match ${index + 1}`;
           const identifiers = document.createElement("div");
           identifiers.className = "match-identifiers";
-          for (const [label, key] of [["Match ID", "game_id"], ["Équipe ID", "team_id"]]) {
+          for (const [label, key] of [["Match ID", "game_id"], ["Équipe", "team_abbreviation"]]) {
             const identifier = document.createElement("span");
             identifier.className = "match-id";
             identifier.textContent = `${label} : ${match[key] ?? "—"}`;

@@ -9,6 +9,7 @@ class Game_goalie_stats_out(BaseModel):
     game_id: UUID
     player_id: UUID
     team_id: UUID
+    team_abbreviation: str | None = None
     time_on_ice: int = Field(ge=0)
     assists: int = Field(ge=0)
     goals: int = Field(ge=0)

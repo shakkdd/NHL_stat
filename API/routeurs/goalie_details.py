@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from API.database import getdb
 from API.models.Game_goalie_stats import Game_goalie_stats
+from API.models.Team import Team
 from API.schema.Game_goalie_stats import Game_goalie_stats_out, Goalie_global_stats
 
 router = APIRouter(prefix="/Goalie_stat", tags=["Goalie_stat"])
@@ -19,12 +20,23 @@ def get_goalie_match_stats(
     page: int = Query(0, ge=0),
     db: Session = Depends(getdb),
 ):
-    query = select(Game_goalie_stats).where(Game_goalie_stats.player_id == player_id)
+    query = (
+        select(Game_goalie_stats, Team.abbreviation.label("team_abbreviation"))
+        .join(Team, Game_goalie_stats.team_id == Team.team_id)
+        .where(Game_goalie_stats.player_id == player_id)
+    )
     if team_id:
         query = query.where(Game_goalie_stats.team_id == team_id)
 
     query = query.order_by(Game_goalie_stats.game_id).offset(page).limit(limit)
-    return db.scalars(query).all()
+    rows = db.execute(query).all()
+    return [
+        {
+            **Game_goalie_stats_out.model_validate(stats).model_dump(),
+            "team_abbreviation": team_abbreviation,
+        }
+        for stats, team_abbreviation in rows
+    ]
 
 
 @router.get("/{player_id}/global_stat", response_model=Goalie_global_stats | None)
@@ -79,12 +91,17 @@ def get_goalie_global_stats(
     return result
 
 
-@router.get("/{player_id}/Teams", response_model=list[UUID])
+@router.get("/{player_id}/Teams")
 def get_goalie_teams(player_id: UUID, db: Session = Depends(getdb)):
     query = (
-        select(Game_goalie_stats.team_id)
+        select(Team.team_id, Team.abbreviation)
+        .select_from(Game_goalie_stats)
+        .join(Team, Game_goalie_stats.team_id == Team.team_id)
         .where(Game_goalie_stats.player_id == player_id)
         .distinct()
-        .order_by(Game_goalie_stats.team_id)
+        .order_by(Team.abbreviation)
     )
-    return db.scalars(query).all()
+    return [
+        {"team_id": team_id, "abbreviation": abbreviation}
+        for team_id, abbreviation in db.execute(query).all()
+    ]

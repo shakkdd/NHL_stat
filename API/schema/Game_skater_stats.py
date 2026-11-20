@@ -6,6 +6,7 @@ class Game_skater_stats_out(BaseModel):
     
     game_id : UUID
     team_id : UUID
+    team_abbreviation: str | None = None
     player_id : UUID
     time_on_ice : int = Field(ge=0)
     assists : int = Field(ge=0)

@@ -230,11 +230,8 @@
       const awayTeam = document.createElement("div");
       const awayName = document.createElement("h2");
       awayName.className = "team-name";
-      awayName.textContent = "Équipe extérieure";
-      const awayId = document.createElement("span");
-      awayId.className = "team-id";
-      awayId.textContent = `ID : ${game.away_team_id}`;
-      awayTeam.append(awayName, awayId);
+      awayName.textContent = game.away_team_abbreviation || "Équipe extérieure";
+      awayTeam.appendChild(awayName);
 
       const score = document.createElement("div");
       score.className = "game-score";
@@ -244,11 +241,8 @@
       const homeTeam = document.createElement("div");
       const homeName = document.createElement("h2");
       homeName.className = "team-name";
-      homeName.textContent = "Équipe à domicile";
-      const homeId = document.createElement("span");
-      homeId.className = "team-id";
-      homeId.textContent = `ID : ${game.home_team_id}`;
-      homeTeam.append(homeName, homeId);
+      homeName.textContent = game.home_team_abbreviation || "Équipe à domicile";
+      homeTeam.appendChild(homeName);
 
       const metadata = document.createElement("div");
       metadata.className = "game-meta";
